@@ -1,0 +1,7 @@
+{
+  "name": "The Gift That Keeps Unlocking",
+  "description": "An ultra-premium, cinematic interactive digital gift experience crafted for 9:16 mobile storytelling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

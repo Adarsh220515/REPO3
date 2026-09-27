@@ -1,0 +1,3271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>The Gift That Keeps Unlocking 🎁✨</title>
+  <meta name="description" content="An ultra-premium, cinematic interactive digital gift experience crafted for 9:16 mobile storytelling." />
+  <meta property="og:title" content="The Gift That Keeps Unlocking 🎁✨" />
+  <meta property="og:description" content="An ultra-premium, cinematic interactive digital gift experience crafted for 9:16 mobile storytelling." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans for luxury cinematic look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       RESET & BASE STYLING
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-dark: #07050d;
+      --bg-deep: #0e091a;
+      --accent-gold: #ffd166;
+      --accent-rose: #ff4d88;
+      --accent-purple: #9d4edd;
+      --accent-crimson: #d90429;
+      --glow-gold: rgba(255, 209, 102, 0.45);
+      --glow-rose: rgba(255, 77, 136, 0.5);
+      --font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030206;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    /* 9:16 CINEMATIC CONTAINER (DESKTOP & MOBILE WRAPPER) */
+    .app-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 480px;
+      max-height: 960px;
+      aspect-ratio: 9 / 16;
+      background: radial-gradient(circle at 50% 30%, #170c29 0%, #0a0514 60%, #040207 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 80px rgba(157, 78, 221, 0.25), 0 25px 60px rgba(0, 0, 0, 0.95);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: translateZ(0);
+    }
+
+    @media (max-width: 600px) {
+      .app-viewport {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+    }
+
+    /* BACKGROUND PARTICLES CANVAS */
+    #fx-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* VIGNETTE & AMBIENT SPOTLIGHT OVERLAYS */
+    .ambient-spotlight {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      width: 460px;
+      height: 460px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255, 209, 102, 0.14) 0%, rgba(217, 4, 41, 0.08) 45%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      filter: blur(40px);
+    }
+
+    .vignette-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(3, 2, 6, 0.85) 95%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* NEBULA & COSMIC ORBITS (SCENE 3) */
+    .nebula-cloud {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(55px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      z-index: 1;
+    }
+
+    .nebula-1 {
+      top: 20%;
+      left: 10%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, transparent 70%);
+    }
+
+    .nebula-2 {
+      bottom: 25%;
+      right: 10%;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(255, 77, 136, 0.25) 0%, transparent 70%);
+    }
+
+    .scene-active-nebula .nebula-cloud {
+      opacity: 1;
+    }
+
+    /* TOP CONTROLS & TIMELINE BAR */
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .story-progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .story-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4d88, #ffd166, #ff4d88);
+      background-size: 200% 100%;
+      animation: progressGlow 2s linear infinite;
+      transition: width 0.4s ease-out;
+      box-shadow: 0 0 12px rgba(255, 209, 102, 0.9);
+    }
+
+    @keyframes progressGlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .badge-reel-tag {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .pulsing-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #ff4d88;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ff4d88;
+      animation: pulseDot 1.5s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    .utility-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.06);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* SCENE VIEWPORT & STAGE */
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+    }
+
+    /* SCENE LAYER CONTAINER */
+    .scene-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 65px 22px 55px 22px;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95) translateY(14px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .scene-layer.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
+
+    /* ==========================================================================
+       SCENE 1: MYSTERIOUS INTRO
+       ========================================================================== */
+    .intro-text-group {
+      text-align: center;
+      margin-bottom: 28px;
+      transition: all 0.6s ease;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kicker-text {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      letter-spacing: 0.15em;
+      color: rgba(255, 209, 102, 0.95);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-shadow: 0 0 16px rgba(255, 209, 102, 0.6);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+      text-wrap: balance;
+      background: linear-gradient(180deg, #ffffff 10%, #e0c3fc 60%, #ffd166 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 18px rgba(217, 4, 41, 0.35));
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    /* 3D LUXURY GIFT BOX */
+    .gift-box-wrapper {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      margin-bottom: 34px;
+      touch-action: manipulation;
+    }
+
+    .gift-box-podium-shadow {
+      position: absolute;
+      bottom: -15px;
+      width: 170px;
+      height: 35px;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, rgba(255, 77, 136, 0.18) 45%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(8px);
+      transform: rotateX(65deg);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .gift-svg-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 25px var(--glow-rose));
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: hoverGift 4s ease-in-out infinite;
+    }
+
+    .gift-box-wrapper:hover .gift-svg-container {
+      transform: translateY(-6px) scale(1.02);
+    }
+
+    .gift-box-wrapper:active .gift-svg-container {
+      transform: scale(0.96);
+    }
+
+    @keyframes hoverGift {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(0.8deg); }
+    }
+
+    /* CALL TO ACTION BUTTON */
+    .glow-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 36px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #d90429 0%, #ff4d88 50%, #9d4edd 100%);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255, 77, 136, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .glow-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+      transform: rotate(35deg) translateY(-100%);
+      transition: transform 0.8s ease;
+    }
+
+    .glow-btn:hover::before {
+      transform: rotate(35deg) translateY(100%);
+    }
+
+    .glow-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 45px rgba(255, 209, 102, 0.7), 0 10px 25px rgba(217, 4, 41, 0.5);
+    }
+
+    .glow-btn:active {
+      transform: scale(0.97);
+    }
+
+    .pulse-animation {
+      animation: btnPulseGlow 2.2s infinite;
+    }
+
+    @keyframes btnPulseGlow {
+      0%, 100% { box-shadow: 0 0 25px rgba(255, 77, 136, 0.5); }
+      50% { box-shadow: 0 0 50px rgba(255, 209, 102, 0.85), 0 0 80px rgba(255, 77, 136, 0.6); }
+    }
+
+    /* ==========================================================================
+       SCENE 2: GIFT OPENING ANIMATION PHASES
+       ========================================================================== */
+    .opening-phase-1 .gift-svg-container {
+      animation: boxRumble 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+    }
+
+    @keyframes boxRumble {
+      0%, 100% { transform: translate(0, 0) rotate(0); }
+      20% { transform: translate(-3px, 2px) rotate(-1.5deg); }
+      40% { transform: translate(3px, -2px) rotate(1.5deg); }
+      60% { transform: translate(-2px, -2px) rotate(-1deg); }
+      80% { transform: translate(2px, 2px) rotate(1deg); }
+    }
+
+    .opening-phase-2 #box-lid-group {
+      transform: translateY(-90px) rotate(-22deg) scale(1.08);
+      opacity: 0.1;
+      filter: blur(3px);
+      transition: all 1s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    }
+
+    .opening-phase-2 #inner-light-beam {
+      opacity: 1 !important;
+      transform: scaleY(3.5) scaleX(2.8) !important;
+      transition: all 0.8s ease-out;
+    }
+
+    /* FULL SCREEN FLASH EFFECT */
+    .flash-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, #ffffff 20%, #ffd166 60%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.4s ease-out;
+    }
+
+    .flash-active {
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       SCENE 3 & 4: MAGICAL COSMIC WORLD & 5 FLOATING SURPRISES
+       ========================================================================== */
+    .cosmic-headline {
+      text-align: center;
+      margin-bottom: 20px;
+      z-index: 15;
+    }
+
+    .sub-cue {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .floating-objects-orbit {
+      position: relative;
+      width: 310px;
+      height: 310px;
+      margin: 6px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-item {
+      position: absolute;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px var(--glow-gold);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      touch-action: manipulation;
+    }
+
+    .floating-item:hover, .floating-item.active-pulse {
+      transform: scale(1.18) !important;
+      border-color: #ffd166;
+      box-shadow: 0 0 35px #ffd166, 0 15px 30px rgba(0, 0, 0, 0.6);
+      z-index: 20;
+    }
+
+    .floating-item svg {
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+      transition: transform 0.3s ease;
+    }
+
+    .floating-item:hover svg {
+      transform: scale(1.1);
+    }
+
+    /* POSITIONS FOR 5 ORBITING SURPRISES */
+    .item-pos-1 { top: 10px; left: 121px; animation: floatObj1 4s ease-in-out infinite; }
+    .item-pos-2 { top: 75px; right: 12px; animation: floatObj2 4.6s ease-in-out infinite; }
+    .item-pos-3 { bottom: 30px; right: 35px; animation: floatObj3 5.2s ease-in-out infinite; }
+    .item-pos-4 { bottom: 30px; left: 35px; animation: floatObj4 4.8s ease-in-out infinite; }
+    .item-pos-5 { top: 75px; left: 12px; animation: floatObj5 4.4s ease-in-out infinite; }
+
+    @keyframes floatObj1 {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-12px) rotate(4deg); }
+    }
+    @keyframes floatObj2 {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-14px) rotate(-5deg); }
+    }
+    @keyframes floatObj3 {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-10px) rotate(6deg); }
+    }
+    @keyframes floatObj4 {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-15px) rotate(-4deg); }
+    }
+    @keyframes floatObj5 {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-11px) rotate(5deg); }
+    }
+
+    /* REVEALED MESSAGE CARD */
+    .surprise-quote-toast {
+      position: absolute;
+      bottom: 22px;
+      left: 18px;
+      right: 18px;
+      background: rgba(18, 12, 33, 0.9);
+      border: 1px solid rgba(255, 209, 102, 0.45);
+      backdrop-filter: blur(20px);
+      padding: 16px 20px;
+      border-radius: 18px;
+      text-align: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 209, 102, 0.25);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 25;
+    }
+
+    .surprise-quote-toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       SCENE 5: THE SECRET LUXURY LETTER
+       ========================================================================== */
+    .letter-stage-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .wax-envelope {
+      position: relative;
+      width: 290px;
+      height: 190px;
+      background: linear-gradient(135deg, #2a164d 0%, #1a0b33 100%);
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(157, 78, 221, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      perspective: 800px;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(180deg, #371d64 0%, #251246 100%);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top center;
+      transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 4;
+      border-top: 1px solid rgba(255, 209, 102, 0.5);
+    }
+
+    .envelope-open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 75px;
+      width: 48px;
+      height: 48px;
+      background: radial-gradient(circle at 35% 35%, #ff4d88 0%, #d90429 60%, #800020 100%);
+      border-radius: 50%;
+      border: 2px solid #ffd166;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 77, 136, 0.8);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffd166;
+      font-size: 18px;
+      transition: all 0.5s ease;
+    }
+
+    .wax-seal:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px #ffd166;
+    }
+
+    .parchment-sheet {
+      position: absolute;
+      width: 280px;
+      height: 250px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f7f1e5 100%);
+      border-radius: 10px;
+      border: 1px solid rgba(217, 180, 110, 0.6);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      padding: 24px 20px;
+      color: #1a0b2e;
+      z-index: 2;
+      transform: translateY(0) scale(0.9);
+      opacity: 0;
+      transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .envelope-open .parchment-sheet {
+      transform: translateY(-110px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+
+    .typewriter-body {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.65;
+      font-weight: 500;
+      color: #2b1046;
+      min-height: 110px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .typewriter-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 17px;
+      background-color: #d90429;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blinkCursor 0.8s infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* DISSOLVE EFFECT ON PARCHMENT */
+    .parchment-dissolve {
+      filter: blur(8px) brightness(2.2);
+      opacity: 0 !important;
+      transform: translateY(-140px) scale(1.2) !important;
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* ==========================================================================
+       SCENE 6: PARTICLE HEART TRANSFORMATION
+       ========================================================================== */
+    .heart-formation-cue {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      color: #ffd166;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 260px;
+      text-shadow: 0 0 20px rgba(255, 209, 102, 0.6);
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    /* ==========================================================================
+       SCENE 7: THE REAL GIFT (SECOND OBSIDIAN BOX)
+       ========================================================================== */
+    .obsidian-gift-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 26px;
+      animation: floatObsidian 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 35px rgba(255, 77, 136, 0.6));
+    }
+
+    @keyframes floatObsidian {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* ROTATING 3D PRISM CRYSTAL / SACRED ARTIFACT */
+    .crystal-artifact-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1000px;
+      margin-bottom: 25px;
+    }
+
+    .spinning-crystal {
+      width: 160px;
+      height: 160px;
+      filter: drop-shadow(0 0 45px rgba(255, 77, 136, 0.8)) drop-shadow(0 0 75px rgba(255, 209, 102, 0.9));
+      animation: spinCrystal 10s linear infinite;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes spinCrystal {
+      0% { transform: rotateY(0deg) rotateX(10deg); }
+      50% { transform: rotateY(180deg) rotateX(-10deg); }
+      100% { transform: rotateY(360deg) rotateX(10deg); }
+    }
+
+    /* ==========================================================================
+       SCENE 8: THE GRAND FINALE REVEAL
+       ========================================================================== */
+    .grand-heart-beating {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin-bottom: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: divineHeartbeat 2.2s ease-in-out infinite;
+    }
+
+    .grand-heart-beating svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 35px #ff4d88) drop-shadow(0 0 70px #ffd166);
+    }
+
+    @keyframes divineHeartbeat {
+      0% { transform: scale(1); filter: drop-shadow(0 0 30px #ff4d88); }
+      14% { transform: scale(1.18); filter: drop-shadow(0 0 65px #ffd166) drop-shadow(0 0 90px #ff4d88); }
+      28% { transform: scale(1.05); }
+      42% { transform: scale(1.22); filter: drop-shadow(0 0 75px #ffd166) drop-shadow(0 0 100px #ff4d88); }
+      70% { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+
+    .final-headline-main {
+      font-family: var(--font-display);
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.25;
+      text-align: center;
+      text-wrap: balance;
+      background: linear-gradient(180deg, #ffffff 0%, #ffd166 50%, #ff4d88 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 4px 20px rgba(255, 77, 136, 0.6));
+    }
+
+    .final-sub-reminder {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+    }
+
+    .developer-credits {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .dev-byline {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .dev-handle {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #ffd166;
+      text-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+    }
+
+    /* REPLAY & AUDIO UPLOAD FOOTER BAR */
+    .bottom-interactive-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .text-action-btn {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(14px);
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .text-action-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: #ffd166;
+      color: #ffd166;
+    }
+
+    /* HIDDEN AUDIO FILE INPUT */
+    #custom-audio-input {
+      display: none;
+    }
+
+    /* TAP PARTICLES RIPPLE EFFECT */
+    .tap-ripple {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 209, 102, 0.8) 0%, rgba(255, 77, 136, 0.4) 60%, transparent 100%);
+      transform: translate(-50%, -50%) scale(1);
+      animation: rippleExpand 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    @keyframes rippleExpand {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+    }
+
+    /* ==========================================================================
+       V2 EXTENDED STYLES (16 ADVANCED CINEMATIC FEATURES)
+       ========================================================================== */
+    /* 6. DAY -> SUNSET -> NIGHT ENVIRONMENT SKY */
+    .app-viewport.sky-day {
+      background: radial-gradient(circle at 50% 25%, #3a2254 0%, #1e1136 50%, #0d061c 100%) !important;
+    }
+    .app-viewport.sky-sunset {
+      background: radial-gradient(circle at 50% 25%, #6a1a4c 0%, #30103b 50%, #0d0517 100%) !important;
+    }
+    .app-viewport.sky-night {
+      background: radial-gradient(circle at 50% 30%, #170c29 0%, #0a0514 60%, #040207 100%) !important;
+    }
+
+    /* 7. INTERACTIVE CELESTIAL MOON */
+    .celestial-moon {
+      position: absolute;
+      top: 55px;
+      right: 28px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fffdf0 0%, #ffd166 65%, #d4a373 100%);
+      box-shadow: 0 0 20px rgba(255, 209, 102, 0.6), 0 0 45px rgba(255, 209, 102, 0.3);
+      cursor: pointer;
+      z-index: 8;
+      transition: all 0.5s ease;
+      animation: moonGlowPulse 4s ease-in-out infinite;
+    }
+    .celestial-moon:hover, .celestial-moon.moon-bright {
+      transform: scale(1.15);
+      box-shadow: 0 0 35px #ffd166, 0 0 70px rgba(255, 255, 255, 0.9);
+    }
+    @keyframes moonGlowPulse {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 209, 102, 0.6)); }
+      50% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.9)); }
+    }
+    .moon-wave-ring {
+      position: absolute;
+      top: 55px;
+      right: 28px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 209, 102, 0.8);
+      pointer-events: none;
+      z-index: 9;
+      transform: scale(1);
+      opacity: 0;
+    }
+    .moon-wave-active {
+      animation: moonWaveExpand 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes moonWaveExpand {
+      0% { transform: scale(1); opacity: 1; border-color: #ffd166; }
+      100% { transform: scale(18); opacity: 0; border-color: #ff4d88; }
+    }
+
+    /* 15. SHOOTING STAR */
+    .shooting-star-line {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, #ffffff, rgba(255, 209, 102, 0.8), transparent);
+      border-radius: 2px;
+      filter: drop-shadow(0 0 6px #fff);
+      transform: rotate(-35deg);
+      cursor: pointer;
+      z-index: 12;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .shooting-star-active {
+      pointer-events: auto;
+      animation: shootAcross 1.8s linear forwards;
+    }
+    @keyframes shootAcross {
+      0% { transform: translate(120%, -50%) rotate(-35deg); opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translate(-120%, 350%) rotate(-35deg); opacity: 0; }
+    }
+
+    /* 1. SECRET 3-STEP UNLOCK RUNES */
+    .secret-rune {
+      position: absolute;
+      font-size: 15px;
+      color: rgba(255, 209, 102, 0.35);
+      cursor: pointer;
+      z-index: 22;
+      padding: 8px;
+      transition: all 0.4s ease;
+      text-shadow: 0 0 8px rgba(255, 209, 102, 0.3);
+    }
+    .secret-rune:hover {
+      color: #ffd166;
+      transform: scale(1.3);
+      text-shadow: 0 0 15px #ffd166;
+    }
+    .secret-rune.found {
+      color: #ff4d88;
+      text-shadow: 0 0 18px #ff4d88;
+      pointer-events: none;
+      animation: foundSpin 1s ease-out;
+    }
+    @keyframes foundSpin {
+      0% { transform: scale(1) rotate(0); }
+      50% { transform: scale(1.6) rotate(180deg); }
+      100% { transform: scale(1) rotate(360deg); }
+    }
+    .rune-pos-1 { top: 92px; left: 16px; }
+    .rune-pos-2 { bottom: 65px; right: 20px; }
+    .rune-pos-3 { top: 120px; right: 24px; }
+
+    /* 14. BUTTERFLY SWARM */
+    .butterfly {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      z-index: 16;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.1s linear;
+      filter: drop-shadow(0 0 6px #ff758c);
+    }
+    .butterfly svg {
+      width: 100%;
+      height: 100%;
+    }
+    .butterfly-wings {
+      transform-origin: center;
+      animation: flutter 0.25s ease-in-out infinite alternate;
+    }
+    @keyframes flutter {
+      0% { transform: scaleX(0.3); }
+      100% { transform: scaleX(1); }
+    }
+
+    /* 12. FLOATING BALLOONS */
+    .floating-balloon {
+      position: absolute;
+      width: 42px;
+      height: 52px;
+      cursor: pointer;
+      z-index: 18;
+      touch-action: manipulation;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+      animation: balloonRise 8s linear infinite;
+    }
+    @keyframes balloonRise {
+      0% { transform: translateY(500px) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.95; }
+      90% { opacity: 0.95; }
+      100% { transform: translateY(-100px) rotate(10deg); opacity: 0; }
+    }
+
+    /* 9. MINI SECRET ENVELOPE (P.S. NOTE) */
+    .mini-secret-envelope {
+      position: absolute;
+      bottom: 85px;
+      right: 22px;
+      width: 38px;
+      height: 28px;
+      background: linear-gradient(135deg, #ffd166 0%, #d4a373 100%);
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 209, 102, 0.5);
+      cursor: pointer;
+      z-index: 22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      border: 1px solid #fff;
+      animation: floatSubtle 3s ease-in-out infinite;
+    }
+
+    /* 3. INTERACTIVE MINI MUSIC PLAYER (GLASSMORPHISM) */
+    .floating-music-player {
+      position: absolute;
+      top: 60px;
+      left: 16px;
+      right: 16px;
+      background: rgba(22, 14, 38, 0.85);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 209, 102, 0.3);
+      border-radius: 16px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 28;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transform: translateY(-80px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-music-player.visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .music-album-art {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff4d88, #9d4edd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 10px rgba(255, 77, 136, 0.5);
+    }
+    .music-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .music-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 10px;
+      margin-top: 3px;
+    }
+    .music-bar {
+      width: 3px;
+      height: 100%;
+      background: #ffd166;
+      border-radius: 2px;
+      animation: barJump 0.8s ease-in-out infinite alternate;
+    }
+    .music-bar:nth-child(2) { animation-delay: 0.2s; background: #ff4d88; }
+    .music-bar:nth-child(3) { animation-delay: 0.4s; background: #9d4edd; }
+    .music-bar:nth-child(4) { animation-delay: 0.1s; background: #ffd166; }
+    @keyframes barJump {
+      0% { height: 20%; }
+      100% { height: 100%; }
+    }
+    .music-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    /* V2 BOTTOM QUICK ACTIONS CAROUSEL */
+    .v2-floating-drawer {
+      position: absolute;
+      bottom: 60px;
+      left: 12px;
+      right: 12px;
+      z-index: 25;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 6px 2px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      pointer-events: auto;
+    }
+    .v2-floating-drawer::-webkit-scrollbar { display: none; }
+    .v2-chip-btn {
+      flex-shrink: 0;
+      padding: 7px 13px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border-radius: 20px;
+      background: rgba(25, 15, 40, 0.8);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .v2-chip-btn:hover {
+      background: rgba(255, 209, 102, 0.2);
+      border-color: #ffd166;
+      color: #ffd166;
+      transform: translateY(-2px);
+    }
+    .v2-chip-btn:active { transform: scale(0.95); }
+
+    /* FULL MODAL BACKDROP (FOR POLAROIDS, SECRET PORTAL, LOVE GARDEN, PASSWORD) */
+    .v2-modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(7, 4, 15, 0.88);
+      backdrop-filter: blur(16px);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s ease;
+    }
+    .v2-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .v2-modal-card {
+      width: 100%;
+      max-width: 330px;
+      background: linear-gradient(135deg, rgba(32, 18, 55, 0.95), rgba(18, 9, 33, 0.95));
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 77, 136, 0.3);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform: scale(0.92);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .v2-modal-overlay.open .v2-modal-card {
+      transform: scale(1);
+    }
+    .modal-close-x {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* 2. POLAROID MEMORY CARDS */
+    .polaroid-frame {
+      width: 230px;
+      background: #ffffff;
+      padding: 12px 12px 28px 12px;
+      border-radius: 8px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 209, 102, 0.5);
+      transform: rotate(-3deg);
+      transition: all 0.4s ease;
+      cursor: pointer;
+      color: #1a0b2e;
+    }
+    .polaroid-frame:hover {
+      transform: rotate(0deg) scale(1.04);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px #ffd166;
+    }
+    .polaroid-artwork {
+      width: 100%;
+      height: 200px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .polaroid-caption {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 14px;
+      text-align: center;
+      color: #2b1046;
+    }
+
+    /* 8. GROWING LOVE GARDEN */
+    .garden-heart-stage {
+      position: relative;
+      width: 260px;
+      height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .garden-flower-node {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0);
+      opacity: 0;
+    }
+    .garden-flower-node.bloomed {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* 10. LOVE PASSWORD INPUT */
+    .secret-pw-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      border-radius: 30px;
+      color: #fff;
+      font-size: 15px;
+      text-align: center;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      outline: none;
+      margin: 14px 0;
+    }
+    .secret-pw-input:focus {
+      border-color: #ff4d88;
+      box-shadow: 0 0 15px rgba(255, 77, 136, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 9:16 CINEMATIC REEL VIEWPORT WRAPPER -->
+  <main class="app-viewport" id="appViewport">
+
+    <!-- CANVAS PARTICLE SYSTEM (FULL COMPOSITOR) -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- LIGHTING, NEBULA & VIGNETTE FILTERS -->
+    <div class="ambient-spotlight" id="ambientSpotlight"></div>
+    <div class="nebula-cloud nebula-1" id="nebula1"></div>
+    <div class="nebula-cloud nebula-2" id="nebula2"></div>
+    <div class="vignette-overlay"></div>
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <!-- TOP NAVIGATION & STORY PROGRESS BAR -->
+    <header class="top-bar">
+      <div class="story-progress-track">
+        <div class="story-progress-bar" id="storyProgressBar"></div>
+      </div>
+      <div class="header-controls">
+        <div class="badge-reel-tag">
+          <span class="pulsing-dot"></span>
+          <span id="sceneStatusLabel">Act 1 · Intro</span>
+        </div>
+        <div class="utility-actions">
+          <button class="icon-btn" id="btnAudioToggle" title="Toggle Sound / Ambient Music" aria-label="Toggle Sound">
+            <span id="audioIcon">🔇</span>
+          </button>
+          <button class="icon-btn" id="btnUploadMusic" title="Upload Custom Song / Reel Audio" aria-label="Upload Music">
+            <span>🎵</span>
+          </button>
+          <button class="icon-btn" id="btnAutoPlayToggle" title="Toggle Auto Reel Mode (Hands-Free Recording)" aria-label="Auto Mode">
+            <span id="autoIcon">⚡</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- SCENE STAGE (3D INTERACTION ARENA) -->
+    <section class="stage" id="stageContainer">
+
+      <!-- ==========================================
+           SCENE 1: MYSTERIOUS INTRO
+           ========================================== -->
+      <div class="scene-layer active" id="scene1">
+        <div class="intro-text-group">
+          <p class="kicker-text" id="introKicker">Someone left you a gift...</p>
+          <h1 class="hero-title" id="introTitle">Wait… 👀</h1>
+        </div>
+
+        <div class="gift-box-wrapper" id="primaryGiftBox" role="button" aria-label="Open Mystery Gift Box">
+          <div class="gift-box-podium-shadow"></div>
+          
+          <div class="gift-svg-container" id="giftSvgContainer">
+            <!-- CRAFTED LUXURY GIFT BOX WITH SILK RIBBON & VOLUMETRIC LIGHT -->
+            <svg viewBox="0 0 200 200" width="100%" height="100%">
+              <defs>
+                <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#800f2f" />
+                  <stop offset="50%" stop-color="#590d22" />
+                  <stop offset="100%" stop-color="#250914" />
+                </linearGradient>
+                <linearGradient id="lidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#a4133c" />
+                  <stop offset="100%" stop-color="#590d22" />
+                </linearGradient>
+                <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fff3b0" />
+                  <stop offset="35%" stop-color="#ffd166" />
+                  <stop offset="70%" stop-color="#e09f3e" />
+                  <stop offset="100%" stop-color="#99582a" />
+                </linearGradient>
+                <linearGradient id="innerBeam" x1="50%" y1="100%" x2="50%" y2="0%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+                  <stop offset="40%" stop-color="#ffd166" stop-opacity="0.9" />
+                  <stop offset="100%" stop-color="#ff4d88" stop-opacity="0" />
+                </linearGradient>
+                <filter id="goldShine">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ffd166" flood-opacity="0.8" />
+                </filter>
+              </defs>
+
+              <!-- Inner Beam Light Burst (Erupts on lid open) -->
+              <path id="inner-light-beam" d="M 75 100 L 125 100 L 160 10 L 40 10 Z" fill="url(#innerBeam)" opacity="0" transform-origin="100 100" />
+
+              <!-- Box Body -->
+              <rect x="45" y="90" width="110" height="85" rx="6" fill="url(#boxGrad)" stroke="rgba(255,209,102,0.4)" stroke-width="1.5" />
+              <!-- Box Inner Shadow & Highlight -->
+              <line x1="48" y1="92" x2="152" y2="92" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+              
+              <!-- Vertical Silk Ribbon Body -->
+              <rect x="90" y="90" width="20" height="85" fill="url(#goldRibbon)" filter="url(#goldShine)" />
+              <line x1="100" y1="90" x2="100" y2="175" stroke="#fff3b0" stroke-width="1" stroke-dasharray="3 2" opacity="0.7" />
+
+              <!-- Animated Detachable Lid Group -->
+              <g id="box-lid-group" transform-origin="100 85">
+                <rect x="38" y="72" width="124" height="24" rx="5" fill="url(#lidGrad)" stroke="rgba(255,209,102,0.6)" stroke-width="1.5" />
+                <line x1="41" y1="74" x2="159" y2="74" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" />
+                <!-- Lid Horizontal Ribbon -->
+                <rect x="90" y="72" width="20" height="24" fill="url(#goldRibbon)" filter="url(#goldShine)" />
+                
+                <!-- Ribbon Bow Top Knot & Loops -->
+                <g id="ribbonBow" transform="translate(100, 72)">
+                  <!-- Left Loop -->
+                  <path d="M 0 0 C -25 -25, -45 -10, -25 5 C -10 10, -3 2, 0 0 Z" fill="url(#goldRibbon)" filter="url(#goldShine)" />
+                  <!-- Right Loop -->
+                  <path d="M 0 0 C 25 -25, 45 -10, 25 5 C 10 10, 3 2, 0 0 Z" fill="url(#goldRibbon)" filter="url(#goldShine)" />
+                  <!-- Flowing Tails -->
+                  <path d="M -5 3 C -20 22, -35 25, -40 38" stroke="url(#goldRibbon)" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <path d="M 5 3 C 20 22, 35 25, 40 38" stroke="url(#goldRibbon)" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <!-- Center Knot Jewel -->
+                  <circle cx="0" cy="0" r="7" fill="#ffd166" stroke="#fff" stroke-width="1.5" />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <button class="glow-btn pulse-animation" id="btnOpenBox">
+          <span>OPEN IT 🎁</span>
+        </button>
+      </div>
+
+      <!-- ==========================================
+           SCENE 3 & 4: THE MAGIC WORLD & FLOATING SURPRISES
+           ========================================== -->
+      <div class="scene-layer" id="scene2">
+        <div class="cosmic-headline">
+          <h2 class="hero-title" id="magicWorldTitle">Okay… there’s more.</h2>
+          <p class="sub-cue" id="magicWorldSub">A lot more. 👀✨</p>
+        </div>
+
+        <div class="floating-objects-orbit" id="orbitContainer">
+          <!-- 1. Crystal Heart -->
+          <div class="floating-item item-pos-1" data-id="heart" title="Heart of Caring">
+            <svg viewBox="0 0 40 40">
+              <defs>
+                <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ff758c" />
+                  <stop offset="100%" stop-color="#ff4d88" />
+                </linearGradient>
+              </defs>
+              <path d="M 20 33 C 20 33, 6 23, 6 13 C 6 7, 11 4, 16 6 C 18 7, 19 9, 20 11 C 21 9, 22 7, 24 6 C 29 4, 34 7, 34 13 C 34 23, 20 33, 20 33 Z" fill="url(#heartGrad)" />
+            </svg>
+          </div>
+
+          <!-- 2. Celestial Star -->
+          <div class="floating-item item-pos-2" data-id="star" title="Starlight Sparkle">
+            <svg viewBox="0 0 40 40">
+              <defs>
+                <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fff" />
+                  <stop offset="60%" stop-color="#ffd166" />
+                  <stop offset="100%" stop-color="#e09f3e" />
+                </linearGradient>
+              </defs>
+              <path d="M 20 4 L 24 15 L 36 20 L 24 25 L 20 36 L 16 25 L 4 20 L 16 15 Z" fill="url(#starGrad)" />
+            </svg>
+          </div>
+
+          <!-- 3. Sakura Bloom -->
+          <div class="floating-item item-pos-3" data-id="flower" title="Glowing Sakura">
+            <svg viewBox="0 0 40 40">
+              <circle cx="20" cy="12" r="6" fill="#ffb7b2" opacity="0.9" />
+              <circle cx="28" cy="18" r="6" fill="#ff9aa2" opacity="0.9" />
+              <circle cx="25" cy="27" r="6" fill="#ffb7b2" opacity="0.9" />
+              <circle cx="15" cy="27" r="6" fill="#ff9aa2" opacity="0.9" />
+              <circle cx="12" cy="18" r="6" fill="#ffb7b2" opacity="0.9" />
+              <circle cx="20" cy="20" r="4" fill="#ffd166" />
+            </svg>
+          </div>
+
+          <!-- 4. Tiny Mystery Gift -->
+          <div class="floating-item item-pos-4" data-id="gift" title="Secret Parcel">
+            <svg viewBox="0 0 40 40">
+              <rect x="8" y="14" width="24" height="20" rx="3" fill="#9d4edd" />
+              <rect x="18" y="14" width="4" height="20" fill="#ffd166" />
+              <rect x="6" y="10" width="28" height="6" rx="2" fill="#c77dff" />
+              <circle cx="20" cy="9" r="3" fill="#ffd166" />
+            </svg>
+          </div>
+
+          <!-- 5. Luxury Secret Envelope -->
+          <div class="floating-item item-pos-5" data-id="envelope" title="The Secret Letter">
+            <svg viewBox="0 0 40 40">
+              <rect x="6" y="10" width="28" height="20" rx="3" fill="#240046" stroke="#ffd166" stroke-width="1.2" />
+              <path d="M 6 11 L 20 22 L 34 11" fill="none" stroke="#ffd166" stroke-width="1.5" />
+              <circle cx="20" cy="21" r="3.5" fill="#d90429" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Pop-up quote preview card -->
+        <div class="surprise-quote-toast" id="surpriseQuoteToast">
+          <p id="surpriseQuoteText">You found something magical...</p>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SCENE 5: THE SECRET LETTER & UNVEILING
+           ========================================== -->
+      <div class="scene-layer" id="scene3">
+        <div class="letter-stage-wrapper" id="letterStageWrapper">
+          <div class="wax-envelope" id="waxEnvelope" role="button" aria-label="Open Secret Letter">
+            <div class="envelope-flap" id="envelopeFlap"></div>
+            <div class="wax-seal" id="waxSeal">✦</div>
+
+            <div class="parchment-sheet" id="parchmentSheet">
+              <div class="typewriter-body" id="typewriterBody"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SCENE 6: PARTICLE HEART DISSOLUTION & PULSE
+           ========================================== -->
+      <div class="scene-layer" id="scene4">
+        <p class="heart-formation-cue" id="heartFormationCue">Every thought assembled for you...</p>
+      </div>
+
+      <!-- ==========================================
+           SCENE 7: THE REAL GIFT & DIGITAL CRYSTAL
+           ========================================== -->
+      <div class="scene-layer" id="scene5">
+        <div class="intro-text-group">
+          <p class="kicker-text">Okay...</p>
+          <h2 class="hero-title" id="realGiftTitle">THIS is the real one. ❤️</h2>
+        </div>
+
+        <div class="obsidian-gift-wrapper" id="obsidianBox" role="button" aria-label="Open Final Real Gift">
+          <svg viewBox="0 0 160 160" width="100%" height="100%">
+            <defs>
+              <linearGradient id="obsidianGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1f1d2b" />
+                <stop offset="50%" stop-color="#0f0e17" />
+                <stop offset="100%" stop-color="#000000" />
+              </linearGradient>
+              <linearGradient id="hologramGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ff758c" />
+                <stop offset="50%" stop-color="#ffd166" />
+                <stop offset="100%" stop-color="#06d6a0" />
+              </linearGradient>
+            </defs>
+            <!-- Obsidian Body -->
+            <rect x="35" y="65" width="90" height="75" rx="8" fill="url(#obsidianGrad)" stroke="url(#hologramGold)" stroke-width="2" />
+            <rect x="72" y="65" width="16" height="75" fill="url(#hologramGold)" />
+            <!-- Obsidian Lid -->
+            <g id="obsidianLid">
+              <rect x="28" y="48" width="104" height="22" rx="6" fill="#1f1d2b" stroke="url(#hologramGold)" stroke-width="2" />
+              <rect x="72" y="48" width="16" height="22" fill="url(#hologramGold)" />
+              <circle cx="80" cy="46" r="6" fill="#ffd166" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="crystal-artifact-container" id="crystalArtifactContainer" style="display:none;">
+          <!-- 3D FACETED PRISM CRYSTAL HEART -->
+          <div class="spinning-crystal">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <defs>
+                <linearGradient id="prism1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                  <stop offset="50%" stop-color="#ffd166" stop-opacity="0.9" />
+                  <stop offset="100%" stop-color="#ff758c" stop-opacity="0.8" />
+                </linearGradient>
+                <linearGradient id="prism2" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#fff3b0" stop-opacity="0.95" />
+                  <stop offset="60%" stop-color="#ffd166" stop-opacity="0.9" />
+                  <stop offset="100%" stop-color="#ff4d88" stop-opacity="0.85" />
+                </linearGradient>
+                <linearGradient id="prism3" x1="50%" y1="0%" x2="50%" y2="100%">
+                  <stop offset="0%" stop-color="#c77dff" stop-opacity="0.9" />
+                  <stop offset="50%" stop-color="#9d4edd" stop-opacity="0.95" />
+                  <stop offset="100%" stop-color="#7209b7" stop-opacity="0.95" />
+                </linearGradient>
+                <linearGradient id="prism4" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#06d6a0" stop-opacity="0.8" />
+                  <stop offset="50%" stop-color="#4cc9f0" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="#ffd166" stop-opacity="0.9" />
+                </linearGradient>
+              </defs>
+              <!-- Multi-Faceted 3D Crystal Prism Heart Silhouette -->
+              <polygon points="50,15 30,30 50,42" fill="url(#prism1)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="50,15 70,30 50,42" fill="url(#prism2)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="30,30 15,45 35,58 50,42" fill="url(#prism3)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="70,30 85,45 65,58 50,42" fill="url(#prism4)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="35,58 50,42 65,58 50,75" fill="url(#prism1)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="35,58 50,75 50,92 28,66" fill="url(#prism2)" stroke="#fff" stroke-width="0.8" />
+              <polygon points="65,58 50,75 50,92 72,66" fill="url(#prism3)" stroke="#fff" stroke-width="0.8" />
+              <!-- Specular Sparkle Highlights -->
+              <circle cx="50" cy="42" r="3.5" fill="#ffffff" filter="drop-shadow(0 0 8px #fff)" />
+              <circle cx="62" cy="56" r="2" fill="#ffd166" filter="drop-shadow(0 0 5px #ffd166)" />
+            </svg>
+          </div>
+        </div>
+
+        <button class="glow-btn pulse-animation" id="btnOpenRealGift">
+          <span>CLAIM IT ✨</span>
+        </button>
+      </div>
+
+      <!-- ==========================================
+           SCENE 8: THE GRAND EMOTIONAL FINALE
+           ========================================== -->
+      <div class="scene-layer" id="scene6">
+        <div class="grand-heart-beating" id="grandHeart">
+          <svg viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="divineHeartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="30%" stop-color="#ffd166" />
+                <stop offset="70%" stop-color="#ff4d88" />
+                <stop offset="100%" stop-color="#d90429" />
+              </linearGradient>
+            </defs>
+            <path d="M 50 88 C 50 88, 12 62, 12 34 C 12 18, 26 10, 39 16 C 45 19, 48 23, 50 27 C 52 23, 55 19, 61 16 C 74 10, 88 18, 88 34 C 88 62, 50 88, 50 88 Z" fill="url(#divineHeartGrad)" />
+          </svg>
+        </div>
+
+        <h1 class="final-headline-main" id="finalMainHeader">YOU ARE THE REAL GIFT. ❤️</h1>
+        <p class="final-sub-reminder" id="finalSubReminder">Always remember that. ✨</p>
+
+        <div class="developer-credits">
+          <span class="dev-byline">Made with ❤️ + Code 💻</span>
+          <span class="dev-handle">@hack.n.code</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- V2: CELESTIAL MOON & SHOOTING STAR -->
+    <div class="celestial-moon" id="celestialMoon" title="Tap the Moon 🌙" aria-label="Celestial Moon"></div>
+    <div class="moon-wave-ring" id="moonWaveRing"></div>
+    <div class="shooting-star-line" id="shootingStar"></div>
+
+    <!-- V2: 3 SECRET RUNES HIDDEN IN SCENES -->
+    <span class="secret-rune rune-pos-1" id="secretRune1" data-rune="♡" title="Hidden Rune 1">♡</span>
+    <span class="secret-rune rune-pos-2" id="secretRune2" data-rune="✦" title="Hidden Rune 2">✦</span>
+    <span class="secret-rune rune-pos-3" id="secretRune3" data-rune="∞" title="Hidden Rune 3">∞</span>
+
+    <!-- V2: FLOATING BUTTERFLIES SWARM -->
+    <div id="butterflyContainer"></div>
+
+    <!-- V2: FLOATING BALLOONS SURPRISE -->
+    <div id="balloonContainer"></div>
+
+    <!-- V2: MINI SECRET ENVELOPE (P.S. NOTE) -->
+    <div class="mini-secret-envelope" id="miniSecretEnvelope" title="A secret note for you ✉️">
+      <span>✉️</span>
+    </div>
+
+    <!-- V2: GLASSMORPHISM MINI MUSIC PLAYER -->
+    <div class="floating-music-player" id="floatingMusicPlayer">
+      <div class="music-album-art">🎶</div>
+      <div class="music-info">
+        <span class="music-title">Our Little Story ❤️</span>
+        <div class="music-bars">
+          <span class="music-bar"></span>
+          <span class="music-bar"></span>
+          <span class="music-bar"></span>
+          <span class="music-bar"></span>
+        </div>
+      </div>
+      <button class="music-btn" id="btnPlayerToggle" title="Play/Pause">▶</button>
+      <button class="music-btn" id="btnPlayerClose" title="Close Player">✕</button>
+    </div>
+
+    <!-- V2: FLOATING QUICK ACTIONS CAROUSEL -->
+    <div class="v2-floating-drawer" id="v2Drawer">
+      <button class="v2-chip-btn" id="btnTellMeSomething">💬 Tell me something ❤️</button>
+      <button class="v2-chip-btn" id="btnSurpriseMe">🎲 Surprise Me</button>
+      <button class="v2-chip-btn" id="btnOpenPolaroids">📸 Memories</button>
+      <button class="v2-chip-btn" id="btnOpenGarden">🌹 Love Garden</button>
+      <button class="v2-chip-btn" id="btnOpenSecretChest">🔐 Password Box</button>
+      <button class="v2-chip-btn" id="btnMagicWand">🪄 Magic Wand</button>
+    </div>
+
+    <!-- V2: MODAL 1 - SECRET UNLOCK PORTAL -->
+    <div class="v2-modal-overlay" id="modalSecretPortal">
+      <div class="v2-modal-card">
+        <button class="modal-close-x" onclick="closeV2Modal('modalSecretPortal')">✕</button>
+        <div style="font-size: 38px; margin-bottom: 10px; animation: floatSubtle 2s infinite;">✨ 🌀 ✨</div>
+        <h3 style="font-family: var(--font-display); color: #ffd166; font-size: 20px; margin-bottom: 8px;">YOU FOUND THE SECRET ❤️</h3>
+        <p style="font-size: 15px; line-height: 1.6; color: #fff; margin-bottom: 14px;">Some things are meant only for you. 🫶</p>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.7); font-style: italic;">"In every timeline, every universe, it would still be you."</p>
+      </div>
+    </div>
+
+    <!-- V2: MODAL 2 - MEMORY POLAROIDS -->
+    <div class="v2-modal-overlay" id="modalPolaroids">
+      <div class="v2-modal-card">
+        <button class="modal-close-x" onclick="closeV2Modal('modalPolaroids')">✕</button>
+        <div class="polaroid-frame" id="polaroidDisplay">
+          <div class="polaroid-artwork" id="polaroidArt"></div>
+          <div class="polaroid-caption" id="polaroidCaption">First memory ✨</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+          <button class="v2-chip-btn" id="btnPrevPolaroid">◀ Prev</button>
+          <button class="v2-chip-btn" id="btnNextPolaroid">Next ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- V2: MODAL 3 - GROWING LOVE GARDEN -->
+    <div class="v2-modal-overlay" id="modalGarden">
+      <div class="v2-modal-card">
+        <button class="modal-close-x" onclick="closeV2Modal('modalGarden')">✕</button>
+        <h3 style="font-family: var(--font-display); color: #ff758c; font-size: 18px; margin-bottom: 6px;">The Love Garden 🌹</h3>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.8);" id="gardenSubtext">Tap the glowing seed to nurture it 🌱</p>
+        
+        <div class="garden-heart-stage" id="gardenHeartStage">
+          <!-- Seed Button -->
+          <div id="seedButton" style="width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle, #06d6a0, #048a64); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 0 20px #06d6a0;">🌱</div>
+        </div>
+
+        <p style="font-size: 13px; color: #ffd166; font-weight: 600; min-height: 20px;" id="gardenQuote"></p>
+      </div>
+    </div>
+
+    <!-- V2: MODAL 4 - LOVE PASSWORD CHEST -->
+    <div class="v2-modal-overlay" id="modalPassword">
+      <div class="v2-modal-card">
+        <button class="modal-close-x" onclick="closeV2Modal('modalPassword')">✕</button>
+        <div style="font-size: 32px; margin-bottom: 8px;">🔐</div>
+        <h3 style="font-family: var(--font-display); color: #ffd166; font-size: 18px;">Secret Vault</h3>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px;">Some surprises need a password. 🔐</p>
+        
+        <input type="text" class="secret-pw-input" id="passwordInput" placeholder="Enter password…" maxlength="15" autocomplete="off" />
+        <button class="glow-btn" style="padding: 10px 24px; font-size: 12px;" id="btnSubmitPassword">UNLOCK ❤️</button>
+        <p style="font-size: 13px; margin-top: 10px; min-height: 18px; font-weight: 600;" id="passwordFeedback"></p>
+      </div>
+    </div>
+
+    <!-- V2: MODAL 5 - MINI ENVELOPE (P.S. NOTE) -->
+    <div class="v2-modal-overlay" id="modalMiniNote">
+      <div class="v2-modal-card">
+        <button class="modal-close-x" onclick="closeV2Modal('modalMiniNote')">✕</button>
+        <div style="font-size: 30px; margin-bottom: 6px;">💌</div>
+        <div style="background: #fffdf8; padding: 18px 16px; border-radius: 12px; border: 1px solid rgba(217, 180, 110, 0.6); color: #1a0b2e; font-size: 15px; font-weight: 600; line-height: 1.6; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+          “P.S. I would choose you again. In a hundred lifetimes, in a hundred worlds… always you. ❤️”
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM INTERACTIVE / REPLAY BAR -->
+    <footer class="bottom-interactive-bar">
+      <button class="text-action-btn" id="btnReplay">
+        <span>↻ REPLAY</span>
+      </button>
+      <button class="text-action-btn" id="btnNextScene">
+        <span id="nextBtnLabel">NEXT STEP ➔</span>
+      </button>
+    </footer>
+
+    <!-- OPTIONAL USER MUSIC UPLOAD INPUT -->
+    <input type="file" id="custom-audio-input" accept="audio/*" />
+
+  </main>
+
+  <!-- ==========================================================================
+       FULL SCRIPT LOGIC (PARTICLE SYSTEM, AUDIO SYNTH, ANIMATIONS, STORY FLOW)
+       ========================================================================== */ -->
+  <script>
+    /**
+     * THE GIFT THAT KEEPS UNLOCKING 🎁✨
+     * Author: @hack.n.code
+     * Clean, standalone, high-performance interactive 9:16 experience.
+     */
+    (() => {
+      'use strict';
+
+      // --- APPLICATION STATE ---
+      const state = {
+        currentSceneIndex: 0,
+        totalScenes: 6, // 0: Intro, 1: Magic World, 2: Secret Letter, 3: Particle Heart, 4: Real Gift, 5: Finale
+        autoPlay: true, // Auto progression enabled for screen-recording Reels
+        audioEnabled: false,
+        isAudioContextStarted: false,
+        timerId: null,
+        storyTimelineSeconds: 38,
+        surprisesDiscovered: new Set(),
+        isTransitioning: false,
+        bgMusicInterval: null,
+      };
+
+      // --- DOM ELEMENT CACHE ---
+      const viewport = document.getElementById('appViewport');
+      const canvas = document.getElementById('fx-canvas');
+      const ctx = canvas.getContext('2d');
+      const progressBar = document.getElementById('storyProgressBar');
+      const sceneStatusLabel = document.getElementById('sceneStatusLabel');
+      const flashOverlay = document.getElementById('flashOverlay');
+      const ambientSpotlight = document.getElementById('ambientSpotlight');
+
+      // Buttons & Controls
+      const btnAudioToggle = document.getElementById('btnAudioToggle');
+      const audioIcon = document.getElementById('audioIcon');
+      const btnUploadMusic = document.getElementById('btnUploadMusic');
+      const btnAutoPlayToggle = document.getElementById('btnAutoPlayToggle');
+      const autoIcon = document.getElementById('autoIcon');
+      const customAudioInput = document.getElementById('custom-audio-input');
+      const btnReplay = document.getElementById('btnReplay');
+      const btnNextScene = document.getElementById('btnNextScene');
+      const nextBtnLabel = document.getElementById('nextBtnLabel');
+
+      // Scenes
+      const scenes = [
+        document.getElementById('scene1'),
+        document.getElementById('scene2'),
+        document.getElementById('scene3'),
+        document.getElementById('scene4'),
+        document.getElementById('scene5'),
+        document.getElementById('scene6'),
+      ];
+
+      // Scene 1 Elements
+      const primaryGiftBox = document.getElementById('primaryGiftBox');
+      const btnOpenBox = document.getElementById('btnOpenBox');
+      const introKicker = document.getElementById('introKicker');
+      const introTitle = document.getElementById('introTitle');
+
+      // Scene 2 Elements (Floating Surprises)
+      const magicWorldTitle = document.getElementById('magicWorldTitle');
+      const magicWorldSub = document.getElementById('magicWorldSub');
+      const floatingItems = document.querySelectorAll('.floating-item');
+      const surpriseQuoteToast = document.getElementById('surpriseQuoteToast');
+      const surpriseQuoteText = document.getElementById('surpriseQuoteText');
+
+      // Scene 3 Elements (Secret Letter)
+      const waxEnvelope = document.getElementById('waxEnvelope');
+      const waxSeal = document.getElementById('waxSeal');
+      const parchmentSheet = document.getElementById('parchmentSheet');
+      const typewriterBody = document.getElementById('typewriterBody');
+
+      // Scene 4 Elements
+      const heartFormationCue = document.getElementById('heartFormationCue');
+
+      // Scene 5 Elements (Real Gift & Crystal)
+      const obsidianBox = document.getElementById('obsidianBox');
+      const crystalArtifactContainer = document.getElementById('crystalArtifactContainer');
+      const btnOpenRealGift = document.getElementById('btnOpenRealGift');
+      const realGiftTitle = document.getElementById('realGiftTitle');
+
+      // Scene 6 Elements
+      const finalMainHeader = document.getElementById('finalMainHeader');
+      const finalSubReminder = document.getElementById('finalSubReminder');
+
+      // Audio Elements
+      let audioCtx = null;
+      let userMusicElement = null;
+
+      // ==========================================================================
+      // WEB AUDIO SYNTHESIZER & AMBIENT MUSIC ENGINE (Zero external dependencies)
+      // ==========================================================================
+      function initAudio() {
+        if (state.isAudioContextStarted) return;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+            if (audioCtx.state === 'suspended') {
+              audioCtx.resume();
+            }
+            state.isAudioContextStarted = true;
+            state.audioEnabled = true;
+            audioIcon.textContent = '🔊';
+            startAmbientMusicBox();
+          }
+        } catch (e) {
+          console.warn('Web Audio not supported', e);
+        }
+      }
+
+      // Soft ambient music box lullaby (gentle chord arpeggio)
+      function startAmbientMusicBox() {
+        if (state.bgMusicInterval) clearInterval(state.bgMusicInterval);
+        const chords = [
+          [261.63, 329.63, 392.00, 493.88], // C maj7
+          [220.00, 261.63, 329.63, 392.00], // A min7
+          [174.61, 220.00, 261.63, 329.63], // F maj7
+          [196.00, 246.94, 293.66, 392.00], // G sus
+        ];
+        let chordIdx = 0;
+        let noteIdx = 0;
+
+        state.bgMusicInterval = setInterval(() => {
+          if (!state.audioEnabled || !audioCtx || userMusicElement) return;
+          const currentChord = chords[chordIdx];
+          const freq = currentChord[noteIdx];
+          playGentleBell(freq);
+
+          noteIdx++;
+          if (noteIdx >= currentChord.length) {
+            noteIdx = 0;
+            chordIdx = (chordIdx + 1) % chords.length;
+          }
+        }, 650);
+      }
+
+      function playGentleBell(freq) {
+        if (!state.audioEnabled || !audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 1.25);
+      }
+
+      function playSound(type) {
+        if (!state.audioEnabled || !audioCtx) return;
+        const now = audioCtx.currentTime;
+
+        if (type === 'tap') {
+          // Delicate crystal bell chime
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        } else if (type === 'whoosh') {
+          // Filtered noise riser for gift opening
+          const bufferSize = audioCtx.sampleRate * 0.4;
+          const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(300, now);
+          filter.frequency.exponentialRampToValueAtTime(2800, now + 0.35);
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0.01, now);
+          gain.gain.linearRampToValueAtTime(0.25, now + 0.2);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+          noise.start(now);
+        } else if (type === 'sparkle') {
+          // Melodic glissando sparkle
+          const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+          notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+            gain.gain.setValueAtTime(0.12, now + idx * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + idx * 0.05);
+            osc.stop(now + idx * 0.05 + 0.45);
+          });
+        } else if (type === 'heartbeat') {
+          // Deep warm sub-bass heartbeat thump
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(75, now);
+          osc.frequency.exponentialRampToValueAtTime(38, now + 0.28);
+          gain.gain.setValueAtTime(0.45, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        } else if (type === 'fanfare') {
+          // Celestial chime chord for climax
+          const chord = [392.00, 493.88, 587.33, 783.99, 987.77];
+          chord.forEach((freq) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 1.85);
+          });
+        }
+      }
+
+      // ==========================================================================
+      // HIGH PERFORMANCE CANVAS PARTICLE ENGINE
+      // ==========================================================================
+      let canvasWidth = 0;
+      let canvasHeight = 0;
+      let dpr = 1;
+      const particles = [];
+      const MAX_PARTICLES = 360;
+
+      class Particle {
+        constructor(x, y, config = {}) {
+          this.x = x;
+          this.y = y;
+          this.vx = config.vx !== undefined ? config.vx : (Math.random() * 2 - 1);
+          this.vy = config.vy !== undefined ? config.vy : (Math.random() * 2 - 1);
+          this.size = config.size || (Math.random() * 3 + 1.5);
+          this.baseSize = this.size;
+          this.color = config.color || '#ffd166';
+          this.opacity = config.opacity !== undefined ? config.opacity : (Math.random() * 0.7 + 0.3);
+          this.life = config.life || (Math.random() * 100 + 80);
+          this.maxLife = this.life;
+          this.gravity = config.gravity || 0;
+          this.friction = config.friction !== undefined ? config.friction : 0.98;
+          this.targetX = config.targetX || null;
+          this.targetY = config.targetY || null;
+          this.isAttracted = config.isAttracted || false;
+          this.shape = config.shape || 'circle'; // circle, star, heart
+          this.rotation = Math.random() * Math.PI * 2;
+          this.rotSpeed = (Math.random() - 0.5) * 0.08;
+          this.glow = config.glow !== undefined ? config.glow : true;
+        }
+
+        update() {
+          if (this.targetX !== null && this.targetY !== null && this.isAttracted) {
+            // Spring attraction towards parametric heart target
+            const dx = this.targetX - this.x;
+            const dy = this.targetY - this.y;
+            this.vx += dx * 0.045;
+            this.vy += dy * 0.045;
+            this.vx *= 0.88;
+            this.vy *= 0.88;
+          } else {
+            this.vy += this.gravity;
+            this.vx *= this.friction;
+            this.vy *= this.friction;
+          }
+
+          this.x += this.vx;
+          this.y += this.vy;
+          this.rotation += this.rotSpeed;
+          this.life--;
+        }
+
+        draw(ctx) {
+          const progress = this.life / this.maxLife;
+          const currentOpacity = Math.max(0, this.opacity * progress);
+          if (currentOpacity <= 0.01) return;
+
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rotation);
+          ctx.globalAlpha = currentOpacity;
+          ctx.fillStyle = this.color;
+
+          if (this.glow) {
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = this.color;
+          }
+
+          if (this.shape === 'star') {
+            const spikes = 4;
+            const outerRadius = this.size * 1.5;
+            const innerRadius = this.size * 0.6;
+            ctx.beginPath();
+            let rot = Math.PI / 2 * 3;
+            let step = Math.PI / spikes;
+            ctx.moveTo(0, -outerRadius);
+            for (let i = 0; i < spikes; i++) {
+              let x = Math.cos(rot) * outerRadius;
+              let y = Math.sin(rot) * outerRadius;
+              ctx.lineTo(x, y);
+              rot += step;
+              x = Math.cos(rot) * innerRadius;
+              y = Math.sin(rot) * innerRadius;
+              ctx.lineTo(x, y);
+              rot += step;
+            }
+            ctx.lineTo(0, -outerRadius);
+            ctx.closePath();
+            ctx.fill();
+          } else if (this.shape === 'heart') {
+            const s = this.size * 0.8;
+            ctx.beginPath();
+            ctx.moveTo(0, s * 0.4);
+            ctx.bezierCurveTo(-s, -s * 0.8, -s * 1.6, s * 0.2, 0, s * 1.6);
+            ctx.bezierCurveTo(s * 1.6, s * 0.2, s, -s * 0.8, 0, s * 0.4);
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+
+      function resizeCanvas() {
+        const rect = viewport.getBoundingClientRect();
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvasWidth = rect.width;
+        canvasHeight = rect.height;
+        canvas.width = canvasWidth * dpr;
+        canvas.height = canvasHeight * dpr;
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // Ambient background particles loop
+      function spawnAmbientParticles() {
+        if (particles.length < 70) {
+          const colors = ['#ffd166', '#ff4d88', '#9d4edd', '#ffffff'];
+          particles.push(new Particle(
+            Math.random() * canvasWidth,
+            canvasHeight + 10,
+            {
+              vx: (Math.random() - 0.5) * 0.5,
+              vy: -Math.random() * 0.8 - 0.3,
+              size: Math.random() * 2.2 + 1,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              opacity: Math.random() * 0.5 + 0.2,
+              life: Math.random() * 200 + 150,
+              friction: 0.99,
+              shape: Math.random() > 0.7 ? 'star' : 'circle',
+            }
+          ));
+        }
+      }
+
+      // Burst explosion generator
+      function createParticleBurst(x, y, count = 40, colorPreset = 'gold') {
+        const colorPacks = {
+          gold: ['#fff3b0', '#ffd166', '#e09f3e', '#ff4d88'],
+          rose: ['#ff758c', '#ff4d88', '#d90429', '#ffffff'],
+          cosmic: ['#9d4edd', '#c77dff', '#ffd166', '#4cc9f0', '#ffffff'],
+          rainbow: ['#ff4d88', '#ffd166', '#06d6a0', '#118ab2', '#7209b7'],
+        };
+        const palette = colorPacks[colorPreset] || colorPacks.gold;
+
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 7 + 2;
+          particles.push(new Particle(x, y, {
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: Math.random() * 3.5 + 1.5,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            opacity: 1,
+            life: Math.random() * 45 + 35,
+            gravity: 0.08,
+            friction: 0.94,
+            shape: Math.random() > 0.6 ? 'star' : (Math.random() > 0.8 ? 'heart' : 'circle'),
+          }));
+        }
+      }
+
+      // Parametric Heart Assembly Matrix (Math heart curve)
+      function assembleParametricHeart() {
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2 - 20;
+        const scale = Math.min(canvasWidth, canvasHeight) * 0.016; // Responsive sizing
+
+        const count = 180;
+        for (let i = 0; i < count; i++) {
+          const t = (Math.PI * 2 / count) * i;
+          // Parametric heart formula
+          const targetX = centerX + scale * 16 * Math.pow(Math.sin(t), 3);
+          const targetY = centerY - scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+          // Spawn from envelope position and flock to heart
+          particles.push(new Particle(
+            centerX + (Math.random() - 0.5) * 180,
+            centerY + 100 + (Math.random() - 0.5) * 60,
+            {
+              targetX: targetX,
+              targetY: targetY,
+              isAttracted: true,
+              size: Math.random() * 2.8 + 1.5,
+              color: i % 3 === 0 ? '#ffd166' : (i % 2 === 0 ? '#ff4d88' : '#ffffff'),
+              opacity: 0.95,
+              life: 300,
+              glow: true,
+              shape: 'star',
+            }
+          ));
+        }
+      }
+
+      // Scatter heart particles
+      function explodeHeartParticles() {
+        particles.forEach(p => {
+          if (p.isAttracted) {
+            p.isAttracted = false;
+            const angle = Math.atan2(p.y - (canvasHeight / 2 - 20), p.x - (canvasWidth / 2)) + (Math.random() - 0.5);
+            const speed = Math.random() * 8 + 4;
+            p.vx = Math.cos(angle) * speed;
+            p.vy = Math.sin(angle) * speed;
+            p.gravity = 0.06;
+            p.life = 70;
+            p.maxLife = 70;
+          }
+        });
+      }
+
+      // Main Particle Animation Loop
+      function renderParticles() {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        spawnAmbientParticles();
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.update();
+          p.draw(ctx);
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+
+        requestAnimationFrame(renderParticles);
+      }
+      requestAnimationFrame(renderParticles);
+
+      // ==========================================================================
+      // TOUCH & CLICK RIPPLE EFFECT
+      // ==========================================================================
+      function triggerRipple(x, y) {
+        const ripple = document.createElement('div');
+        ripple.className = 'tap-ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        viewport.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+
+        // Also emit small spark
+        createParticleBurst(x, y, 12, 'gold');
+        playSound('tap');
+      }
+
+      viewport.addEventListener('pointerdown', (e) => {
+        initAudio();
+        const rect = viewport.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          triggerRipple(x, y);
+        }
+      });
+
+      // ==========================================================================
+      // SCENE TRANSITIONS & PROGRESSION ENGINE
+      // ==========================================================================
+      function updateProgressBar() {
+        const progressPercent = ((state.currentSceneIndex + 1) / state.totalScenes) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+
+        const sceneLabels = [
+          'Act 1 · The Mystery Gift',
+          'Act 2 · The Magic Cosmos',
+          'Act 3 · The Secret Letter',
+          'Act 4 · Particle Heart',
+          'Act 5 · The Real Gift',
+          'Act 6 · The Reveal',
+        ];
+        sceneStatusLabel.textContent = sceneLabels[state.currentSceneIndex] || 'The Gift';
+      }
+
+      function transitionToScene(index) {
+        if (state.isTransitioning || index < 0 || index >= state.totalScenes) return;
+        state.isTransitioning = true;
+        clearTimeout(state.timerId);
+        stopTypewriter();
+
+        // Flash bloom transition
+        flashOverlay.classList.add('flash-active');
+        playSound('whoosh');
+
+        setTimeout(() => {
+          scenes.forEach((sc, i) => {
+            if (i === index) {
+              sc.classList.add('active');
+            } else {
+              sc.classList.remove('active');
+            }
+          });
+
+          // Enable/disable cosmic nebula in Act 2
+          if (index === 1) {
+            viewport.classList.add('scene-active-nebula');
+          } else {
+            viewport.classList.remove('scene-active-nebula');
+          }
+
+          state.currentSceneIndex = index;
+          updateProgressBar();
+          flashOverlay.classList.remove('flash-active');
+          state.isTransitioning = false;
+
+          // Dispatch scene onEnter hook
+          onSceneEnter(index);
+        }, 320);
+      }
+
+      // ==========================================================================
+      // SCENE SPECIFIC LOGIC & TIMERS (Handcrafted 35s cinematic flow)
+      // ==========================================================================
+      function onSceneEnter(index) {
+        if (index === 0) {
+          // Act 1: Intro (0-3s)
+          introKicker.textContent = 'Someone left you a gift...';
+          introTitle.textContent = 'Wait… 👀';
+
+          setTimeout(() => {
+            introTitle.textContent = 'I made something for you.';
+          }, 1800);
+
+          if (state.autoPlay) {
+            state.timerId = setTimeout(() => {
+              openPrimaryGiftBox();
+            }, 3800);
+          }
+        } else if (index === 1) {
+          // Act 2: Magic World & Floating Surprises (7-12s)
+          magicWorldTitle.textContent = 'Okay… there’s more.';
+          magicWorldSub.textContent = 'A lot more. 👀✨';
+          ambientSpotlight.style.background = 'radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, rgba(255, 77, 136, 0.15) 50%, transparent 75%)';
+          playSound('sparkle');
+
+          if (state.autoPlay) {
+            // Sequentially trigger items if user is hands-free
+            let delay = 1200;
+            const items = ['heart', 'star', 'flower', 'envelope'];
+            items.forEach((id, i) => {
+              setTimeout(() => {
+                const el = document.querySelector(`.floating-item[data-id="${id}"]`);
+                if (el) handleSurpriseClick(id, el);
+              }, delay + i * 1300);
+            });
+
+            state.timerId = setTimeout(() => {
+              transitionToScene(2);
+            }, 6800);
+          }
+        } else if (index === 2) {
+          // Act 3: Secret Letter (18-23s)
+          ambientSpotlight.style.background = 'radial-gradient(circle, rgba(255, 209, 102, 0.22) 0%, rgba(157, 78, 221, 0.15) 50%, transparent 75%)';
+
+          if (state.autoPlay) {
+            state.timerId = setTimeout(() => {
+              openSecretLetter();
+            }, 1000);
+          }
+        } else if (index === 3) {
+          // Act 4: Particle Transformation & Heart Assembly (23-27s)
+          heartFormationCue.style.opacity = '1';
+          assembleParametricHeart();
+          playSound('sparkle');
+
+          // Pulse 1
+          setTimeout(() => {
+            playSound('heartbeat');
+            ambientSpotlight.style.transform = 'translate(-50%, -50%) scale(1.3)';
+          }, 1400);
+
+          // Pulse 2
+          setTimeout(() => {
+            playSound('heartbeat');
+            ambientSpotlight.style.transform = 'translate(-50%, -50%) scale(1.45)';
+          }, 2400);
+
+          if (state.autoPlay) {
+            state.timerId = setTimeout(() => {
+              explodeHeartParticles();
+              transitionToScene(4);
+            }, 4200);
+          }
+        } else if (index === 4) {
+          // Act 5: Real Gift (27-33s)
+          realGiftTitle.textContent = 'THIS is the real one. ❤️';
+          ambientSpotlight.style.background = 'radial-gradient(circle, rgba(255, 77, 136, 0.3) 0%, rgba(255, 209, 102, 0.2) 50%, transparent 75%)';
+
+          if (state.autoPlay) {
+            state.timerId = setTimeout(() => {
+              openRealGiftBox();
+            }, 2600);
+          }
+        } else if (index === 5) {
+          // Act 6: Finale (33-38s)
+          ambientSpotlight.style.background = 'radial-gradient(circle, rgba(255, 209, 102, 0.35) 0%, rgba(217, 4, 41, 0.25) 50%, transparent 80%)';
+          createParticleBurst(canvasWidth / 2, canvasHeight / 2 - 30, 80, 'rainbow');
+          playSound('fanfare');
+
+          setTimeout(() => {
+            playSound('heartbeat');
+          }, 1200);
+
+          // Grand celebration confetti shower
+          setInterval(() => {
+            if (state.currentSceneIndex === 5) {
+              createParticleBurst(
+                canvasWidth * 0.2 + Math.random() * canvasWidth * 0.6,
+                canvasHeight * 0.2 + Math.random() * canvasHeight * 0.4,
+                15,
+                'gold'
+              );
+            }
+          }, 900);
+        }
+      }
+
+      // ==========================================================================
+      // ACTION: OPEN PRIMARY GIFT (SCENE 1 -> 2)
+      // ==========================================================================
+      function openPrimaryGiftBox() {
+        if (primaryGiftBox.classList.contains('opening-phase-1') || primaryGiftBox.classList.contains('opening-phase-2')) return;
+        initAudio();
+        playSound('whoosh');
+        clearTimeout(state.timerId);
+
+        primaryGiftBox.classList.add('opening-phase-1');
+
+        setTimeout(() => {
+          primaryGiftBox.classList.remove('opening-phase-1');
+          primaryGiftBox.classList.add('opening-phase-2');
+          createParticleBurst(canvasWidth / 2, canvasHeight / 2, 70, 'gold');
+        }, 500);
+
+        setTimeout(() => {
+          transitionToScene(1);
+        }, 1200);
+      }
+
+      primaryGiftBox.addEventListener('click', openPrimaryGiftBox);
+      btnOpenBox.addEventListener('click', openPrimaryGiftBox);
+
+      // ==========================================================================
+      // ACTION: FLOATING SURPRISES INTERACTION (SCENE 2)
+      // ==========================================================================
+      const quotesMap = {
+        heart: 'Someone cares about you. ❤️',
+        star: 'You make ordinary moments special. ✨',
+        flower: 'You deserve beautiful things. 🌸',
+        gift: 'Still not the main surprise… 👀',
+        envelope: 'You found something… 💌',
+      };
+
+      function handleSurpriseClick(id, element) {
+        initAudio();
+        playSound('sparkle');
+        element.classList.add('active-pulse');
+        state.surprisesDiscovered.add(id);
+
+        const rect = element.getBoundingClientRect();
+        const viewRect = viewport.getBoundingClientRect();
+        createParticleBurst(
+          rect.left - viewRect.left + rect.width / 2,
+          rect.top - viewRect.top + rect.height / 2,
+          25,
+          id === 'heart' ? 'rose' : (id === 'star' ? 'gold' : 'cosmic')
+        );
+
+        surpriseQuoteText.textContent = quotesMap[id] || 'You unlocked magic ✨';
+        surpriseQuoteToast.classList.add('visible');
+
+        setTimeout(() => {
+          element.classList.remove('active-pulse');
+        }, 1200);
+
+        setTimeout(() => {
+          surpriseQuoteToast.classList.remove('visible');
+        }, 2200);
+
+        // If envelope clicked directly, proceed to secret letter scene
+        if (id === 'envelope') {
+          setTimeout(() => {
+            transitionToScene(2);
+          }, 1400);
+        }
+      }
+
+      floatingItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const id = item.getAttribute('data-id');
+          handleSurpriseClick(id, item);
+        });
+      });
+
+      // ==========================================================================
+      // ACTION: OPEN SECRET LETTER (SCENE 3)
+      // ==========================================================================
+      let typewriterTimer = null;
+      let letterAlreadyOpened = false;
+
+      function stopTypewriter() {
+        if (typewriterTimer) {
+          clearTimeout(typewriterTimer);
+          typewriterTimer = null;
+        }
+      }
+
+      function typewriteText(element, text, speed = 40, callback) {
+        stopTypewriter();
+        element.innerHTML = '<span class="typewriter-text"></span><span class="typewriter-cursor"></span>';
+        const textSpan = element.querySelector('.typewriter-text');
+
+        let i = 0;
+        function typeChar() {
+          if (!element.isConnected || !textSpan || !element.contains(textSpan)) {
+            typewriterTimer = null;
+            return;
+          }
+          if (i < text.length) {
+            const char = text.charAt(i);
+            if (char === '\n') {
+              textSpan.appendChild(document.createElement('br'));
+            } else {
+              textSpan.appendChild(document.createTextNode(char));
+            }
+            i++;
+            const delay = (char === '.' || char === '…') ? speed * 7 : speed;
+            typewriterTimer = setTimeout(typeChar, delay);
+          } else {
+            typewriterTimer = null;
+            if (callback) callback();
+          }
+        }
+        typeChar();
+      }
+
+      function openSecretLetter() {
+        if (letterAlreadyOpened) return;
+        letterAlreadyOpened = true;
+        initAudio();
+        playSound('sparkle');
+        waxEnvelope.classList.add('envelope-open');
+        createParticleBurst(canvasWidth / 2, canvasHeight / 2 - 50, 30, 'gold');
+
+        const letterMessage = "I wanted to give you something special…\n\nBut I realized…\n\nSome people deserve more than a normal gift.";
+
+        setTimeout(() => {
+          typewriteText(typewriterBody, letterMessage, 45, () => {
+            // Completed typewriter -> Dissolve into particles!
+            setTimeout(() => {
+              dissolveLetterIntoParticles();
+            }, 1600);
+          });
+        }, 800);
+      }
+
+      waxEnvelope.addEventListener('click', openSecretLetter);
+
+      function dissolveLetterIntoParticles() {
+        playSound('whoosh');
+        parchmentSheet.classList.add('parchment-dissolve');
+        createParticleBurst(canvasWidth / 2, canvasHeight / 2 - 60, 90, 'gold');
+
+        setTimeout(() => {
+          transitionToScene(3);
+        }, 1100);
+      }
+
+      // ==========================================================================
+      // ACTION: OPEN REAL OBSIDIAN GIFT (SCENE 5)
+      // ==========================================================================
+      function openRealGiftBox() {
+        if (obsidianBox.style.display === 'none') return;
+        initAudio();
+        playSound('whoosh');
+        clearTimeout(state.timerId);
+
+        const lid = document.getElementById('obsidianLid');
+        lid.style.transform = 'translateY(-60px) rotate(-15deg)';
+        lid.style.opacity = '0.2';
+        lid.style.transition = 'all 0.8s ease';
+
+        createParticleBurst(canvasWidth / 2, canvasHeight / 2, 70, 'rainbow');
+        btnOpenRealGift.style.display = 'none';
+
+        setTimeout(() => {
+          obsidianBox.style.display = 'none';
+          crystalArtifactContainer.style.display = 'flex';
+          realGiftTitle.textContent = 'A digital artifact for you ✨';
+          playSound('sparkle');
+        }, 600);
+
+        setTimeout(() => {
+          transitionToScene(5);
+        }, 3200);
+      }
+
+      obsidianBox.addEventListener('click', openRealGiftBox);
+      btnOpenRealGift.addEventListener('click', openRealGiftBox);
+
+      // ==========================================================================
+      // BOTTOM ACTIONS: REPLAY & MANUAL ADVANCE
+      // ==========================================================================
+      btnReplay.addEventListener('click', () => {
+        initAudio();
+        stopTypewriter();
+        letterAlreadyOpened = false;
+        // Reset states
+        state.surprisesDiscovered.clear();
+        primaryGiftBox.classList.remove('opening-phase-1', 'opening-phase-2');
+        waxEnvelope.classList.remove('envelope-open');
+        parchmentSheet.classList.remove('parchment-dissolve');
+        typewriterBody.innerHTML = '';
+        obsidianBox.style.display = 'flex';
+        crystalArtifactContainer.style.display = 'none';
+        btnOpenRealGift.style.display = 'inline-flex';
+        const obsidianLid = document.getElementById('obsidianLid');
+        if (obsidianLid) {
+          obsidianLid.style.transform = 'none';
+          obsidianLid.style.opacity = '1';
+        }
+        transitionToScene(0);
+      });
+
+      btnNextScene.addEventListener('click', () => {
+        initAudio();
+        const nextIdx = (state.currentSceneIndex + 1) % state.totalScenes;
+        transitionToScene(nextIdx);
+      });
+
+      // ==========================================================================
+      // AUDIO TOGGLE & USER MUSIC UPLOAD
+      // ==========================================================================
+      btnAudioToggle.addEventListener('click', () => {
+        if (!state.isAudioContextStarted) {
+          initAudio();
+        } else {
+          state.audioEnabled = !state.audioEnabled;
+          audioIcon.textContent = state.audioEnabled ? '🔊' : '🔇';
+          if (userMusicElement) {
+            if (state.audioEnabled) userMusicElement.play();
+            else userMusicElement.pause();
+          }
+        }
+      });
+
+      btnAutoPlayToggle.addEventListener('click', () => {
+        state.autoPlay = !state.autoPlay;
+        autoIcon.textContent = state.autoPlay ? '⚡' : '⏸️';
+        btnAutoPlayToggle.style.color = state.autoPlay ? '#ffd166' : '#fff';
+      });
+
+      btnUploadMusic.addEventListener('click', () => {
+        customAudioInput.click();
+      });
+
+      customAudioInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          if (userMusicElement) {
+            userMusicElement.pause();
+            userMusicElement.remove();
+          }
+          userMusicElement = new Audio(url);
+          userMusicElement.loop = true;
+          userMusicElement.play().then(() => {
+            state.audioEnabled = true;
+            audioIcon.textContent = '🔊';
+          }).catch(console.warn);
+        }
+      });
+
+      // ==========================================================================
+      // V2 ADVANCED INTERACTIVE FEATURES LOGIC
+      // ==========================================================================
+      window.closeV2Modal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove('open');
+      };
+
+      function openV2Modal(modalId) {
+        initAudio();
+        playSound('sparkle');
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.add('open');
+      }
+
+      // 5. HEART MOUSE & TOUCH TRAIL (LIGHTWEIGHT & THROTTLED)
+      let lastTrailTime = 0;
+      viewport.addEventListener('pointermove', (e) => {
+        const now = performance.now();
+        if (now - lastTrailTime < 55) return;
+        lastTrailTime = now;
+
+        const rect = viewport.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          particles.push(new Particle(x, y, {
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: -Math.random() * 2 - 0.5,
+            size: Math.random() * 2.5 + 1.2,
+            color: Math.random() > 0.5 ? '#ff4d88' : '#ffd166',
+            opacity: 0.8,
+            life: 30,
+            friction: 0.96,
+            shape: Math.random() > 0.6 ? 'heart' : 'star',
+          }));
+        }
+      });
+
+      // 1. SECRET UNLOCK SYSTEM (3 HIDDEN RUNES: ♡, ✦, ∞)
+      const foundRunes = new Set();
+      const runes = [
+        document.getElementById('secretRune1'),
+        document.getElementById('secretRune2'),
+        document.getElementById('secretRune3'),
+      ];
+
+      runes.forEach(r => {
+        if (!r) return;
+        r.addEventListener('click', (e) => {
+          e.stopPropagation();
+          initAudio();
+          playSound('sparkle');
+          const runeChar = r.getAttribute('data-rune');
+          r.classList.add('found');
+          foundRunes.add(runeChar);
+
+          const rect = r.getBoundingClientRect();
+          const vRect = viewport.getBoundingClientRect();
+          createParticleBurst(rect.left - vRect.left + 10, rect.top - vRect.top + 10, 20, 'gold');
+
+          if (foundRunes.size === 3) {
+            setTimeout(() => {
+              createParticleBurst(canvasWidth / 2, canvasHeight / 2, 80, 'rainbow');
+              playSound('fanfare');
+              openV2Modal('modalSecretPortal');
+            }, 600);
+          }
+        });
+      });
+
+      // 7. INTERACTIVE CELESTIAL MOON
+      const celestialMoon = document.getElementById('celestialMoon');
+      const moonWaveRing = document.getElementById('moonWaveRing');
+      if (celestialMoon) {
+        celestialMoon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          initAudio();
+          playSound('sparkle');
+          celestialMoon.classList.add('moon-bright');
+          if (moonWaveRing) {
+            moonWaveRing.classList.remove('moon-wave-active');
+            void moonWaveRing.offsetWidth;
+            moonWaveRing.classList.add('moon-wave-active');
+          }
+          createParticleBurst(canvasWidth - 50, 75, 25, 'gold');
+          surpriseQuoteText.textContent = 'Even the moon knows… ❤️';
+          surpriseQuoteToast.classList.add('visible');
+          setTimeout(() => {
+            celestialMoon.classList.remove('moon-bright');
+            surpriseQuoteToast.classList.remove('visible');
+          }, 2400);
+        });
+      }
+
+      // 15. SHOOTING STAR LOGIC
+      const shootingStar = document.getElementById('shootingStar');
+      function triggerShootingStar() {
+        if (!shootingStar) return;
+        shootingStar.style.top = `${Math.random() * 200 + 40}px`;
+        shootingStar.style.right = `${Math.random() * 80 + 20}px`;
+        shootingStar.classList.remove('shooting-star-active');
+        void shootingStar.offsetWidth;
+        shootingStar.classList.add('shooting-star-active');
+      }
+      setInterval(triggerShootingStar, 12000);
+      setTimeout(triggerShootingStar, 2500);
+
+      if (shootingStar) {
+        shootingStar.addEventListener('click', (e) => {
+          e.stopPropagation();
+          initAudio();
+          playSound('sparkle');
+          createParticleBurst(canvasWidth / 2, 120, 30, 'rainbow');
+          surpriseQuoteText.textContent = 'Make a wish. ✨';
+          surpriseQuoteToast.classList.add('visible');
+          setTimeout(() => {
+            surpriseQuoteText.textContent = 'Maybe your wish is already here. ❤️';
+          }, 1500);
+          setTimeout(() => {
+            surpriseQuoteToast.classList.remove('visible');
+          }, 3500);
+        });
+      }
+
+      // 9. MINI SECRET ENVELOPE (P.S. NOTE)
+      const miniSecretEnvelope = document.getElementById('miniSecretEnvelope');
+      if (miniSecretEnvelope) {
+        miniSecretEnvelope.addEventListener('click', (e) => {
+          e.stopPropagation();
+          createParticleBurst(canvasWidth - 40, canvasHeight - 95, 25, 'rose');
+          openV2Modal('modalMiniNote');
+        });
+      }
+
+      // 3. FLOATING MUSIC PLAYER
+      const floatingMusicPlayer = document.getElementById('floatingMusicPlayer');
+      const btnPlayerToggle = document.getElementById('btnPlayerToggle');
+      const btnPlayerClose = document.getElementById('btnPlayerClose');
+      btnUploadMusic.addEventListener('click', () => {
+        floatingMusicPlayer.classList.toggle('visible');
+      });
+      if (btnPlayerClose) {
+        btnPlayerClose.addEventListener('click', () => {
+          floatingMusicPlayer.classList.remove('visible');
+        });
+      }
+      if (btnPlayerToggle) {
+        btnPlayerToggle.addEventListener('click', () => {
+          initAudio();
+          state.audioEnabled = !state.audioEnabled;
+          btnPlayerToggle.textContent = state.audioEnabled ? '⏸' : '▶';
+          audioIcon.textContent = state.audioEnabled ? '🔊' : '🔇';
+          if (userMusicElement) {
+            if (state.audioEnabled) userMusicElement.play();
+            else userMusicElement.pause();
+          }
+        });
+      }
+
+      // 4. RANDOM LOVE MESSAGES ("Tell me something ❤️")
+      const loveMessages = [
+        "You make ordinary moments feel special. ❤️",
+        "Somewhere between everything and nothing, I found you.",
+        "If I could code one thing forever, it would be this feeling.",
+        "You are my favourite notification. 📱❤️",
+        "Life feels a little brighter with you.",
+        "No matter what happens, you are my safest place.",
+        "You're the peace I never knew I was searching for.",
+        "Every love song suddenly makes sense because of you.",
+        "My heart beats a little faster whenever you're around.",
+        "You make the chaotic world feel calm and gentle.",
+        "I’d choose you, in a hundred lifetimes, in every universe.",
+        "Your smile is my absolute favourite view. ✨",
+        "You turned simple days into unforgettable poetry.",
+        "With you, home isn't a place—it's a person. 🏡❤️",
+        "You are the best chapter of my story."
+      ];
+
+      const btnTellMeSomething = document.getElementById('btnTellMeSomething');
+      if (btnTellMeSomething) {
+        btnTellMeSomething.addEventListener('click', () => {
+          initAudio();
+          playSound('sparkle');
+          const randomMsg = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+          surpriseQuoteText.textContent = randomMsg;
+          surpriseQuoteToast.classList.add('visible');
+          createParticleBurst(canvasWidth / 2, canvasHeight - 120, 20, 'rose');
+          setTimeout(() => {
+            surpriseQuoteToast.classList.remove('visible');
+          }, 3800);
+        });
+      }
+
+      // 13. RANDOM SURPRISE BUTTON (🎲)
+      const btnSurpriseMe = document.getElementById('btnSurpriseMe');
+      if (btnSurpriseMe) {
+        btnSurpriseMe.addEventListener('click', () => {
+          initAudio();
+          playSound('sparkle');
+          const surprises = ['hearts', 'stars', 'rainbow', 'confetti', 'moonWave'];
+          const pick = surprises[Math.floor(Math.random() * surprises.length)];
+
+          if (pick === 'hearts') {
+            for (let i = 0; i < 4; i++) {
+              setTimeout(() => {
+                createParticleBurst(canvasWidth * (0.2 + i * 0.2), canvasHeight * 0.4, 25, 'rose');
+                playSound('heartbeat');
+              }, i * 200);
+            }
+          } else if (pick === 'stars') {
+            createParticleBurst(canvasWidth / 2, canvasHeight / 3, 60, 'gold');
+          } else if (pick === 'rainbow') {
+            createParticleBurst(canvasWidth / 2, canvasHeight / 2, 70, 'rainbow');
+          } else if (pick === 'confetti') {
+            createParticleBurst(canvasWidth * 0.3, canvasHeight * 0.3, 35, 'gold');
+            createParticleBurst(canvasWidth * 0.7, canvasHeight * 0.3, 35, 'rose');
+          } else {
+            if (celestialMoon) celestialMoon.click();
+          }
+        });
+      }
+
+      // 2. MEMORY POLAROIDS
+      const polaroidsData = [
+        {
+          title: "First memory ✨",
+          gradient: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+          icon: "🌟"
+        },
+        {
+          title: "That smile ❤️",
+          gradient: "linear-gradient(135deg, #ffd166 0%, #ff4d88 100%)",
+          icon: "💫"
+        },
+        {
+          title: "One of my favourite moments 🫶",
+          gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+          icon: "✨"
+        },
+        {
+          title: "Forever worth remembering ♾️",
+          gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+          icon: "🌙"
+        }
+      ];
+      let currentPolaroidIdx = 0;
+      const polaroidArt = document.getElementById('polaroidArt');
+      const polaroidCaption = document.getElementById('polaroidCaption');
+      const btnOpenPolaroids = document.getElementById('btnOpenPolaroids');
+      const btnPrevPolaroid = document.getElementById('btnPrevPolaroid');
+      const btnNextPolaroid = document.getElementById('btnNextPolaroid');
+
+      function updatePolaroidCard() {
+        const item = polaroidsData[currentPolaroidIdx];
+        if (!item || !polaroidArt || !polaroidCaption) return;
+        polaroidArt.style.background = item.gradient;
+        polaroidArt.innerHTML = `<span style="font-size: 54px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">${item.icon}</span>`;
+        polaroidCaption.textContent = item.title;
+      }
+
+      if (btnOpenPolaroids) {
+        btnOpenPolaroids.addEventListener('click', () => {
+          updatePolaroidCard();
+          openV2Modal('modalPolaroids');
+        });
+      }
+      if (btnPrevPolaroid) {
+        btnPrevPolaroid.addEventListener('click', () => {
+          currentPolaroidIdx = (currentPolaroidIdx - 1 + polaroidsData.length) % polaroidsData.length;
+          updatePolaroidCard();
+          playSound('tap');
+        });
+      }
+      if (btnNextPolaroid) {
+        btnNextPolaroid.addEventListener('click', () => {
+          currentPolaroidIdx = (currentPolaroidIdx + 1) % polaroidsData.length;
+          updatePolaroidCard();
+          playSound('tap');
+        });
+      }
+
+      // 8. GROWING LOVE GARDEN LOGIC
+      let gardenStage = 0;
+      const seedButton = document.getElementById('seedButton');
+      const gardenHeartStage = document.getElementById('gardenHeartStage');
+      const gardenSubtext = document.getElementById('gardenSubtext');
+      const gardenQuote = document.getElementById('gardenQuote');
+      const btnOpenGarden = document.getElementById('btnOpenGarden');
+
+      if (btnOpenGarden) {
+        btnOpenGarden.addEventListener('click', () => {
+          openV2Modal('modalGarden');
+        });
+      }
+
+      if (seedButton) {
+        seedButton.addEventListener('click', () => {
+          initAudio();
+          playSound('sparkle');
+          gardenStage++;
+          if (gardenStage === 1) {
+            seedButton.textContent = '🌿';
+            gardenSubtext.textContent = 'A delicate stem unfurls... 🌱';
+            createParticleBurst(canvasWidth / 2, canvasHeight / 2, 15, 'gold');
+          } else if (gardenStage === 2) {
+            seedButton.textContent = '🌹';
+            seedButton.style.boxShadow = '0 0 25px #ff4d88';
+            gardenSubtext.textContent = 'A radiant rose blooms in full beauty!';
+            createParticleBurst(canvasWidth / 2, canvasHeight / 2, 30, 'rose');
+          } else {
+            // Heart-shaped flower cluster
+            seedButton.style.display = 'none';
+            gardenHeartStage.innerHTML = '';
+            const flowerPositions = [
+              { x: 110, y: 30 }, { x: 70, y: 55 }, { x: 150, y: 55 },
+              { x: 50, y: 100 }, { x: 170, y: 100 }, { x: 80, y: 145 },
+              { x: 140, y: 145 }, { x: 110, y: 180 }
+            ];
+            flowerPositions.forEach((pos, i) => {
+              setTimeout(() => {
+                const fl = document.createElement('div');
+                fl.style.position = 'absolute';
+                fl.style.left = `${pos.x}px`;
+                fl.style.top = `${pos.y}px`;
+                fl.style.fontSize = '26px';
+                fl.style.animation = 'flutter 1s infinite alternate';
+                fl.textContent = '🌹';
+                gardenHeartStage.appendChild(fl);
+                playSound('tap');
+              }, i * 150);
+            });
+            gardenSubtext.textContent = 'A heart garden for you!';
+            gardenQuote.textContent = '“Some things grow when you take care of them. 🌹”';
+            createParticleBurst(canvasWidth / 2, canvasHeight / 2, 50, 'rainbow');
+          }
+        });
+      }
+
+      // 10. LOVE PASSWORD CHEST
+      const btnOpenSecretChest = document.getElementById('btnOpenSecretChest');
+      const btnSubmitPassword = document.getElementById('btnSubmitPassword');
+      const passwordInput = document.getElementById('passwordInput');
+      const passwordFeedback = document.getElementById('passwordFeedback');
+
+      if (btnOpenSecretChest) {
+        btnOpenSecretChest.addEventListener('click', () => {
+          openV2Modal('modalPassword');
+        });
+      }
+
+      if (btnSubmitPassword) {
+        btnSubmitPassword.addEventListener('click', () => {
+          const val = (passwordInput.value || '').trim().toUpperCase();
+          const accepted = ['LOVE', 'HEART', 'FOREVER', 'YOU'];
+          initAudio();
+
+          if (accepted.includes(val)) {
+            playSound('fanfare');
+            passwordFeedback.style.color = '#06d6a0';
+            passwordFeedback.textContent = 'ACCESS GRANTED ❤️';
+            createParticleBurst(canvasWidth / 2, canvasHeight / 2, 60, 'rainbow');
+            setTimeout(() => {
+              closeV2Modal('modalPassword');
+              surpriseQuoteText.textContent = 'You unlocked the heart vault! ✨❤️';
+              surpriseQuoteToast.classList.add('visible');
+              setTimeout(() => surpriseQuoteToast.classList.remove('visible'), 3000);
+            }, 1200);
+          } else {
+            playSound('whoosh');
+            passwordFeedback.style.color = '#ff758c';
+            passwordFeedback.textContent = 'Hmm… try again 👀 (Hint: LOVE)';
+          }
+        });
+      }
+
+      // 11. MAGIC WAND DRAWING INTERACTION (Star -> Heart -> Infinity)
+      const btnMagicWand = document.getElementById('btnMagicWand');
+      if (btnMagicWand) {
+        btnMagicWand.addEventListener('click', () => {
+          initAudio();
+          playSound('sparkle');
+          surpriseQuoteText.textContent = 'Magic happens when you believe. ✨';
+          surpriseQuoteToast.classList.add('visible');
+          setTimeout(() => surpriseQuoteToast.classList.remove('visible'), 3200);
+
+          // Star drawing trail
+          const cx = canvasWidth / 2;
+          const cy = canvasHeight / 2 - 40;
+          for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+              const ang = (i / 30) * Math.PI * 4;
+              const r = 40 + Math.sin(i) * 20;
+              particles.push(new Particle(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r, {
+                size: 3,
+                color: '#ffd166',
+                life: 50,
+                glow: true,
+                shape: 'star',
+              }));
+            }, i * 35);
+          }
+        });
+      }
+
+      // 12. FLOATING BALLOONS SETUP
+      const balloonContainer = document.getElementById('balloonContainer');
+      const balloonQuotes = [
+        "You are special ❤️",
+        "Keep smiling 🫶",
+        "Never forget your worth ✨",
+        "One more surprise is waiting… 👀",
+        "OPEN THE FINAL GIFT 🎁"
+      ];
+      if (balloonContainer) {
+        for (let i = 0; i < 5; i++) {
+          const b = document.createElement('div');
+          b.className = 'floating-balloon';
+          b.style.left = `${15 + i * 18}%`;
+          b.style.animationDelay = `${i * 1.6}s`;
+          b.innerHTML = `<svg viewBox="0 0 40 50"><ellipse cx="20" cy="22" rx="16" ry="20" fill="${['#ff4d88', '#ffd166', '#9d4edd', '#06d6a0', '#ff758c'][i]}" /><polygon points="20,42 17,47 23,47" fill="#fff" /><line x1="20" y1="47" x2="20" y2="52" stroke="#fff" stroke-width="1.2" /></svg>`;
+          b.addEventListener('click', (e) => {
+            e.stopPropagation();
+            initAudio();
+            playSound('tap');
+            const rect = b.getBoundingClientRect();
+            const vRect = viewport.getBoundingClientRect();
+            createParticleBurst(rect.left - vRect.left + 20, rect.top - vRect.top + 20, 25, 'gold');
+            b.style.display = 'none';
+
+            surpriseQuoteText.textContent = balloonQuotes[i];
+            surpriseQuoteToast.classList.add('visible');
+            setTimeout(() => surpriseQuoteToast.classList.remove('visible'), 2800);
+
+            if (i === 4) {
+              setTimeout(() => {
+                transitionToScene(4);
+              }, 1200);
+            }
+          });
+          balloonContainer.appendChild(b);
+        }
+      }
+
+      // 14. BUTTERFLY SWARM ANIMATION & FOLLOWER
+      const butterflyContainer = document.getElementById('butterflyContainer');
+      const butterflies = [];
+      if (butterflyContainer) {
+        for (let i = 0; i < 4; i++) {
+          const bf = document.createElement('div');
+          bf.className = 'butterfly';
+          bf.innerHTML = `<svg viewBox="0 0 30 30" class="butterfly-wings"><path d="M 15 15 C 8 2, 0 8, 4 16 C 8 22, 14 18, 15 15 Z" fill="#ff758c" /><path d="M 15 15 C 22 2, 30 8, 26 16 C 22 22, 16 18, 15 15 Z" fill="#ffd166" /><circle cx="15" cy="15" r="1.5" fill="#fff" /></svg>`;
+          butterflyContainer.appendChild(bf);
+
+          const bObj = {
+            el: bf,
+            x: Math.random() * (canvasWidth - 60) + 30,
+            y: Math.random() * (canvasHeight - 200) + 100,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: (Math.random() - 0.5) * 1.5,
+            isFollowing: false,
+          };
+          bf.addEventListener('click', (e) => {
+            e.stopPropagation();
+            initAudio();
+            playSound('sparkle');
+            bObj.isFollowing = true;
+            setTimeout(() => { bObj.isFollowing = false; }, 2500);
+          });
+          butterflies.push(bObj);
+        }
+      }
+
+      function updateButterflies() {
+        butterflies.forEach((b, i) => {
+          if (state.currentSceneIndex === 5) {
+            // At the final scene: All butterflies fly toward the main heart
+            const targetX = canvasWidth / 2 - 10 + Math.sin(performance.now() * 0.003 + i * 1.5) * 60;
+            const targetY = canvasHeight / 2 - 60 + Math.cos(performance.now() * 0.003 + i * 1.5) * 50;
+            b.x += (targetX - b.x) * 0.06;
+            b.y += (targetY - b.y) * 0.06;
+          } else if (!b.isFollowing) {
+            b.x += b.vx;
+            b.y += b.vy;
+            if (b.x < 15 || b.x > canvasWidth - 35) b.vx *= -1;
+            if (b.y < 80 || b.y > canvasHeight - 120) b.vy *= -1;
+          }
+          b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+        });
+        requestAnimationFrame(updateButterflies);
+      }
+      requestAnimationFrame(updateButterflies);
+
+      // 6. DAY -> NIGHT TRANSITION BASED ON SCENE
+      function updateDayNightSky(sceneIdx) {
+        viewport.classList.remove('sky-day', 'sky-sunset', 'sky-night');
+        if (sceneIdx === 0) {
+          viewport.classList.add('sky-day');
+        } else if (sceneIdx === 1 || sceneIdx === 2) {
+          viewport.classList.add('sky-sunset');
+        } else {
+          viewport.classList.add('sky-night');
+        }
+      }
+
+      // Hook updateDayNightSky into transitionToScene
+      const origOnSceneEnter = onSceneEnter;
+      onSceneEnter = function(index) {
+        updateDayNightSky(index);
+        origOnSceneEnter(index);
+      };
+
+      // ==========================================================================
+      // INITIALIZATION
+      // ==========================================================================
+      updateDayNightSky(0);
+      updateProgressBar();
+      onSceneEnter(0);
+
+    })();
+  </script>
+</body>
+</html>
